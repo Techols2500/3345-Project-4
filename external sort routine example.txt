@@ -1,0 +1,202 @@
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+public class Example {
+    public static String sort(String s) {
+// split string into arrya with delimiter as space
+        String[] stringArray = s.split(" ");
+// get length of the string array
+        int length = stringArray.length;
+// declare two integer arrays
+        int[] numbers = new int[length];
+        int[] sortedList = new int[length];
+// convert string array to integer array
+        for (int i = 0; i < length; i++)
+            numbers[i] = Integer.parseInt(stringArray[i]);
+// sort the numbers and store in SortedList
+        for (int i = 0; i < length; i++) {
+            int min = i;
+            for (int x = i; x < length; x++)
+                if (numbers[x] < numbers[min]) {
+                    min = x;
+                }
+            sortedList[i] = numbers[min];
+            numbers[min] = numbers[i];
+        }
+// convert the sorted integer array to string
+        String output = "";
+        for (int i = 0; i < sortedList.length; i++)
+            output += sortedList[i] + " ";
+// return string
+        return output;
+    }
+
+    public static void print(Path sortedFile) {
+        try {
+            Scanner in = new Scanner(sortedFile);
+// print file name of sorted list of integers
+            System.out.print(sortedFile.toString() + ": ");
+// print each integer on the console
+            while (in.hasNextInt()) {
+                System.out.print(in.nextInt() + " ");
+            }
+            System.out.println();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    /*
+     * method extsort for external sorting parameters:
+     * path for first tape and
+     * runsize
+     */
+    public static Path extsort(Path t1, int runsize) {
+// create 3 taps that is create 3 files
+        Path t2 = Paths.get("T2.txt");
+        Path t3 = Paths.get("T3.txt");
+        Path t4 = Paths.get("T4.txt");
+        String numString = "";
+        try {
+            Scanner in = new Scanner(t1);
+            int sum = 0;
+// initialise printwriters for tap3 and tap4
+            PrintWriter tap3 = new PrintWriter(t3.toString());
+            PrintWriter tap4 = new PrintWriter(t4.toString());
+// check it have next integer on the tap1
+            while (in.hasNextInt()) {
+                int count = 0;
+                numString = "";
+// read data from input tap
+                while (in.hasNextInt() && count++ < runsize) {
+// convert into string with space
+                    numString += in.nextInt() + " ";
+                    sum++;
+                }
+// call sort method to sort the numString
+                numString = sort(numString);
+// print sorted string in tape t3
+                tap3.print(numString);
+                numString = "";
+                count = 0;
+// read data from input tap
+                while (in.hasNextInt() && count++ < runsize) {
+                    numString += in.nextInt() + " ";
+                    sum++;
+                }
+// call sort method to sort the numString
+                numString = sort(numString);
+// print sorted string in tape t4
+                tap4.print(numString);
+            }
+// close two tapes
+            tap3.close();
+            tap4.close();
+// find number of runs required
+            int runs = sum % (runsize * 2) == 0 ?
+                    sum / (runsize * 2) : sum / (runsize * 2) + 1;
+// loop for to complete all runs
+            for (int i = 0; i < runs; i++) {
+                if (i % 2 == 0) {// read conten from tap3 and tap4
+                    Scanner inT3 = new Scanner(t3);
+                    Scanner inT4 = new Scanner(t4);
+                    boolean printer = false;
+// initialise write data on the tap1 and tap2
+                    PrintWriter tap1 = new PrintWriter(t1.toString());
+                    PrintWriter tap2 = new PrintWriter(t2.toString());
+// loop until tap3 not have next int
+                    while (inT3.hasNextInt()) {
+                        numString = "";
+                        int count = 0;
+// read data from input tap
+                        while (inT3.hasNextInt() &&
+                                count++ < runsize * (Math.pow(2, i))) {
+// convert into string with space
+                            numString += inT3.nextInt() + " ";
+                        }
+                        int counts = 0;
+// loop until tap4 not have next int
+                        while (inT4.hasNextInt() &&
+                                counts++ < runsize * (Math.pow(2, i))) {
+// convert into string with space
+                            numString += inT4.nextInt() + " ";
+                        }
+// call sort method to sort the numString
+                        numString = sort(numString);
+// print data on tap1 or tap2 based on the condition
+                        if (!printer)
+                            tap1.print(numString);
+                        else
+                            tap2.print(numString);
+// set other tap
+                        printer = !printer;
+                    }
+// close output taps
+                    tap1.close();
+                    tap2.close();
+                }
+                if (i % 2 == 1) {
+                    numString = "";
+// open input tap files T1 and T2
+                    Scanner inT1 = new Scanner(t1);
+                    Scanner inT2 = new Scanner(t2);
+                    boolean printer = false;
+// open outputfiles tap T3 and T4
+                    tap3 = new PrintWriter(t3.toString());
+                    tap4 = new PrintWriter(t4.toString());
+// loop until tap1 has next input
+                    while (inT1.hasNextInt()) {
+                        int count = 0;
+// loop until tap1 not have next int
+                        while (inT1.hasNextInt() &&
+                                count++ < runsize * (Math.pow(2, i))) {
+// convert into string with space
+                            numString += inT1.nextInt() + " ";
+                        }
+                        int counts = 0;
+// loop until tap2 not have next int
+                        while (inT2.hasNextInt() &&
+                                counts++ < runsize * (Math.pow(2, i))) {
+// convert into string with space
+                            numString += inT2.nextInt() + " ";
+                        }
+// call sort method to sort the numString
+                        numString = sort(numString);
+// print data on tap1 or tap2 based on the condition
+                        if (!printer)
+                            tap3.print(numString);
+                        else
+                            tap4.print(numString);
+                        printer = !printer;
+                    }
+// close output taps
+                    tap3.close();
+                    tap4.close();
+                }
+
+            }
+            if (runs % 2 == 1)
+                return t1;
+// return output tap that contains sorted list
+            return t3;
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return t1;
+    }
+
+    public static void main(String[] args) {
+// get run size from command line argument
+        int runsize = Integer.parseInt(args[0]);
+// open Tape T1.txt file
+        Path p = Paths.get("T1.txt");
+// call extsort() method
+        Path sort = extsort(p, runsize);
+// print the sorted data in the path
+        print(sort);
+    }
+}
+

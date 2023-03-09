@@ -1,0 +1,52 @@
+Project #4
+
+Due Dates:  Monday, April 12 at 11:59pm 
+
+Submit:    eLearning
+
+Late Policy:  -10 points per hour late
+
+Instructions: This is an individual assignment.  All work should be your own.
+
+
+
+Objective:
+
+     Implement an external sort routine.
+
+
+Description:
+
+     Create a class called ExternalSort.
+
+     Your class should have the following methods.  You may add additional methods as needed.
+
+     You may use code from the textbook, but all other code must be your own.
+
+
+   80 points
+   a) public static Path extsort(Path t1, int runsize)
+
+          Uses the external sort procedure illustrated in chapter 7 to sort the file represented 
+          by Path t1 using the passed size as the run size and returns a Path to the sorted result.
+
+          For the tapes, use files named T1-T4.  The data should already be on T1 when this method 
+          is called.  You can assume the data consists of Integers.
+
+          Your sort should work even if the number of input items is not a multiple of the run size.
+         
+          Note that "Path" is an object in Java's "java.nio.file" package.
+
+
+
+   20 points
+   b) public static void main(String args[])
+
+          Accepts run size as a command line argument.
+          Assumes input already exists on a file named T1.
+          Calls the external sort routine.
+          Prints the Path object which gives the path to the sorted file.
+
+
+Submit to eLearning:
+     ExternalSort.java
